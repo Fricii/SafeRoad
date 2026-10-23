@@ -306,3 +306,13 @@ body {
 .footer-val.paused {
   color: #3b82f6;
 }
+
+/* Warning Banner */
+.warning-banner { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 24px; font-size: 15px; font-weight: 600; letter-spacing: 0.3px; transition: background-color 0.3s ease; border-bottom: 1px solid #374151; }
+.banner-clear { background-color: #064e3b; color: #34d399; }
+.banner-warning { background-color: #78350f; color: #fbbf24; }
+.banner-critical { background-color: #7f1d1d; color: #f87171; }
+.banner-icon { font-size: 18px; }
+.status-value.risk-clear { color: #34d399; }
+.status-value.risk-warning { color: #fbbf24; }
+.status-value.risk-critical { color: #f87171; }

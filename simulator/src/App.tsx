@@ -50,27 +50,24 @@ function App() {
       lastTimeRef.current = time
 
       // Speeds: V01 = 60 km/h, V02 = 40 km/h
-      // Ratio 60 / 40 = 1.5x. Scaling factor for pixels per second:
       const scale = 40 // pixels per second for 40 km/h unit
       const speedV1 = 60 * (scale / 40) // 60 px/sec
       const speedV2 = 40 * (scale / 40) // 40 px/sec
 
       setPosV1((prev) => {
         const next = prev + speedV1 * deltaTime
-        // Endpoint check (road boundary max width)
         if (next >= roadWidth) {
-          setIsRunning(false) // Stop simulation cleanly when endpoint reached
+          setIsRunning(false)
           return roadWidth
         }
         return next
       })
 
       setPosV2((prev) => {
-        // V02 moves to the left (decreasing position)
         const next = prev - speedV2 * deltaTime
         const minPos = 40
         if (next <= minPos) {
-          setIsRunning(false) // Stop simulation cleanly when endpoint reached
+          setIsRunning(false)
           return minPos
         }
         return next
@@ -88,6 +85,34 @@ function App() {
     }
   }, [isRunning, isPaused])
 
+  // TTC Calculation
+  const scale = 40
+  const speedV1Px = 60 * (scale / 40)
+  const speedV2Px = 40 * (scale / 40)
+  const closingSpeedPx = speedV1Px + speedV2Px
+
+  const distancePx = Math.max(0, posV2 - posV1)
+  const ttc = closingSpeedPx > 0 ? distancePx / closingSpeedPx : null
+
+  let riskLevel = 'CLEAR'
+  if (ttc !== null) {
+    if (ttc <= 2.0) {
+      riskLevel = 'CRITICAL'
+    } else if (ttc <= 5.0) {
+      riskLevel = 'WARNING'
+    } else {
+      riskLevel = 'CLEAR'
+    }
+  }
+
+  // Warning banner text & styling mapping
+  let warningMessage = 'No immediate collision threat detected.'
+  if (riskLevel === 'CRITICAL') {
+    warningMessage = 'DANGER — Imminent collision risk!'
+  } else if (riskLevel === 'WARNING') {
+    warningMessage = 'CAUTION — Potential collision detected.'
+  }
+
   const simStatus = isRunning && !isPaused ? 'RUNNING' : isPaused ? 'PAUSED' : 'STOPPED'
 
   return (
@@ -104,6 +129,14 @@ function App() {
           <button className="control-btn reset-btn" onClick={handleReset}>Reset</button>
         </div>
       </header>
+
+      {/* Visible Driver Warning Banner */}
+      <div className={`warning-banner banner-${riskLevel.toLowerCase()}`}>
+        <span className="banner-icon">
+          {riskLevel === 'CRITICAL' ? '🚨' : riskLevel === 'WARNING' ? '⚠️' : '✅'}
+        </span>
+        <span className="banner-text">{warningMessage}</span>
+      </div>
 
       {/* Main Layout Area */}
       <div className="simulator-main">
@@ -149,6 +182,14 @@ function App() {
             <li>
               <span className="status-label">V2V:</span>
               <span className="status-value inactive">OFF</span>
+            </li>
+            <li className="risk-li">
+              <span className="status-label">Collision Risk:</span>
+              <span className={`status-value risk-${riskLevel.toLowerCase()}`}>{riskLevel}</span>
+            </li>
+            <li>
+              <span className="status-label">TTC:</span>
+              <span className="status-value">{ttc !== null ? `${ttc.toFixed(1)}s` : 'N/A'}</span>
             </li>
           </ul>
         </aside>
