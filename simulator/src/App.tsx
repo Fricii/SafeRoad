@@ -1,121 +1,106 @@
 import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [isRunning, setIsRunning] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+
+  const handleStart = () => {
+    setIsRunning(true)
+    setIsPaused(false)
+  }
+
+  const handlePause = () => {
+    setIsPaused(true)
+  }
+
+  const handleReset = () => {
+    setIsRunning(false)
+    setIsPaused(false)
+  }
+
+  const simStatus = isRunning && !isPaused ? 'RUNNING' : isPaused ? 'PAUSED' : 'STOPPED'
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="simulator-container">
+      {/* Header */}
+      <header className="simulator-header">
+        <div className="header-titles">
+          <h1>SafeRoad</h1>
+          <p>Vehicle-to-Vehicle Safety Simulator</p>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
+        <div className="header-controls">
+          <button className="control-btn start-btn" onClick={handleStart}>Start</button>
+          <button className="control-btn pause-btn" onClick={handlePause}>Pause</button>
+          <button className="control-btn reset-btn" onClick={handleReset}>Reset</button>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      </header>
 
-      <div className="ticks"></div>
+      {/* Main Layout Area */}
+      <div className="simulator-main">
+        {/* Road Simulation Area */}
+        <div className="road-area">
+          <div className="road">
+            <div className="road-edge top-edge"></div>
+            <div className="lane lane-top">
+              <div className="car car-v1" style={{ transform: 'translateX(120px)' }} title="V01 (60 km/h)">
+                <div className="car-body">
+                  <div className="car-roof"></div>
+                  <div className="headlights"></div>
+                </div>
+                <span className="car-label">V01</span>
+              </div>
+            </div>
+            <div className="centerline"></div>
+            <div className="lane lane-bottom">
+              <div className="car car-v2" style={{ transform: 'translateX(580px)' }} title="V02 (40 km/h)">
+                <div className="car-body">
+                  <div className="car-roof"></div>
+                  <div className="headlights"></div>
+                </div>
+                <span className="car-label">V02</span>
+              </div>
+            </div>
+            <div className="road-edge bottom-edge"></div>
+          </div>
+        </div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
+        {/* Right Sidebar */}
+        <aside className="sidebar">
+          <h2>System Status</h2>
+          <ul className="status-list">
             <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
+              <span className="status-label">Vehicles:</span>
+              <span className="status-value">2</span>
             </li>
             <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
+              <span className="status-label">GPS:</span>
+              <span className="status-value active">ON</span>
+            </li>
+            <li>
+              <span className="status-label">V2V:</span>
+              <span className="status-value inactive">OFF</span>
             </li>
           </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        </aside>
+      </div>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      {/* Footer */}
+      <footer className="simulator-footer">
+        <div className="footer-item">
+          <span className="footer-label">Simulation:</span>
+          <span className={`footer-val ${simStatus.toLowerCase()}`}>{simStatus}</span>
+        </div>
+        <div className="footer-item">
+          <span className="footer-label">V01:</span>
+          <span className="footer-val">60 km/h</span>
+        </div>
+        <div className="footer-item">
+          <span className="footer-label">V02:</span>
+          <span className="footer-val">40 km/h</span>
+        </div>
+      </footer>
+    </div>
   )
 }
 
